@@ -107,20 +107,4 @@ GET /desafio/distancia?posX=-10&posY=5
 mvn test
 ```
 
-### Cobertura de Testes
-
-- **Modelo**: 100%
-- **Serviço**: 100%
-- **Controller**: 100%
-- **Repositório**: 100%
-- **Cobertura Total**: >95%
-
-### Mocks e Stubs
-
-- **Mockito**: Para mocking de dependências
-- **WireMock**: Para simulação de APIs externas
-- **TestContainers**: Para testes com banco real (futuro)
-
-
-
 
