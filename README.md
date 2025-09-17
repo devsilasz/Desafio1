@@ -20,28 +20,6 @@ API responsável pelo cadastro e consulta de agências bancárias, integrada ao 
 - Maven 3.8 ou superior
 
 
-## Instalação e Execução
-
-### Desenvolvimento Local
-
-1. **Clone o repositório:**
-   ```bash
-   git clone <repository-url>
-   cd agencia-api
-   ```
-
-2. **Configure as variáveis de ambiente:**
-   ```bash
-   cp .env.example .env
-   # Edite o arquivo .env com suas configurações
-   ```
-
-3. **Execute a aplicação:**
-   ```bash
-   mvn clean install
-   mvn spring-boot:run
-   ```
-
 
 ### Ambiente de Testes
 
