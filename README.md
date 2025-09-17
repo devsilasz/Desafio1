@@ -19,15 +19,6 @@ API responsável pelo cadastro e consulta de agências bancárias, integrada ao 
 - Java 17 ou superior
 - Maven 3.8 ou superior
 
-
-
-### Ambiente de Testes
-
-```bash
-# Executar com perfil de teste
-mvn spring-boot:run -Dspring.profiles.active=test
-```
-
 ### Dependências Externas
 
 - **H2 Database**: Iniciado automaticamente com a aplicação
@@ -55,12 +46,6 @@ Content-Type: application/json
 **Validações:**
 - `posX` e `posY` são obrigatórios
 - Não é permitido cadastrar agências muito próximas (distância mínima: 1.0 unidade)
-- Retorna erro 400 se já existe agência próxima
-
-#### Buscar Agência por ID
-```http
-GET /desafio/agencias/{id}
-```
 
 #### Buscar Agências Próximas
 ```http
