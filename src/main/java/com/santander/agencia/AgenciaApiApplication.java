@@ -7,9 +7,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
-@EnableJpaRepositories
-@EnableTransactionManagement
-@EnableCaching
 public class AgenciaApiApplication {
 
     public static void main(String[] args) {

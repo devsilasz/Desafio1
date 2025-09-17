@@ -27,10 +27,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        jdbc:
-          batch_size: 20
-        order_inserts: true
-        order_updates: true
   sql:
     init:
       mode: always

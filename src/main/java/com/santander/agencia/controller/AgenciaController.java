@@ -51,17 +51,4 @@ public class AgenciaController {
         
         return ResponseEntity.ok(response);
     }
-
-    @GetMapping("/agencias/{id}")
-    public ResponseEntity<Agencia> buscarAgenciaPorId(@PathVariable Long id) {
-        
-        logger.info("Recebida requisição para buscar agência com ID: {}", id);
-
-        Agencia agencia = agenciaService.buscarAgenciaPorId(id);
-        
-        logger.info("Agência encontrada com sucesso - ID: {}, Nome: {}", 
-                   agencia.getId(), agencia.getNome());
-        
-        return ResponseEntity.ok(agencia);
-    }
 }
