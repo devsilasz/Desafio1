@@ -1,0 +1,4 @@
+com/santander/agencia/AgenciaApiApplicationTest.class
+com/santander/agencia/controller/AgenciaControllerTest.class
+com/santander/agencia/service/AgenciaServiceTest.class
+com/santander/agencia/model/AgenciaTest.class

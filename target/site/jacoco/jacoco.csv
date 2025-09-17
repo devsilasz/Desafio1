@@ -1,0 +1,12 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+agencia-api,com.santander.agencia.dto,CadastroAgenciaRequest,19,46,0,0,5,19,2,10,2,10
+agencia-api,com.santander.agencia.dto,CadastroAgenciaResponse,48,42,0,0,16,15,9,8,9,8
+agencia-api,com.santander.agencia.dto,DistanciaResponse,102,0,4,0,30,0,17,0,15,0
+agencia-api,com.santander.agencia.dto,DistanciaResponse.PosicaoUsuario,17,15,0,0,6,6,4,3,4,3
+agencia-api,com.santander.agencia,AgenciaApiApplication,5,3,0,0,2,1,1,1,1,1
+agencia-api,com.santander.agencia.config,SwaggerConfig,0,51,0,0,0,18,0,2,0,2
+agencia-api,com.santander.agencia.config,CacheConfig,0,29,0,0,0,5,0,2,0,2
+agencia-api,com.santander.agencia.config,PerformanceConfig,0,32,0,0,0,10,0,2,0,2
+agencia-api,com.santander.agencia.model,Agencia,196,13,16,0,50,6,33,1,25,1
+agencia-api,com.santander.agencia.controller,AgenciaController,78,172,5,7,19,38,5,9,0,8
+agencia-api,com.santander.agencia.service,AgenciaService,61,288,3,7,11,54,2,15,0,12

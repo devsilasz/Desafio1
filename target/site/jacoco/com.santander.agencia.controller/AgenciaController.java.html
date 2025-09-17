@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AgenciaController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">agencia-api</a> &gt; <a href="index.source.html" class="el_package">com.santander.agencia.controller</a> &gt; <span class="el_source">AgenciaController.java</span></div><h1>AgenciaController.java</h1><pre class="source lang-java linenums">package com.santander.agencia.controller;
+
+import com.santander.agencia.dto.CadastroAgenciaRequest;
+import com.santander.agencia.dto.CadastroAgenciaResponse;
+import com.santander.agencia.dto.DistanciaResponse;
+import com.santander.agencia.model.Agencia;
+import com.santander.agencia.service.AgenciaService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Controller REST para operações relacionadas às agências.
+ * Implementa os endpoints solicitados no desafio com documentação completa.
+ */
+@RestController
+@RequestMapping(&quot;/desafio&quot;)
+@Tag(name = &quot;Agências&quot;, description = &quot;API para cadastro e consulta de distâncias de agências&quot;)
+@CrossOrigin(origins = &quot;*&quot;)
+<span class="fc" id="L35">public class AgenciaController {</span>
+
+<span class="fc" id="L37">    private static final Logger logger = LoggerFactory.getLogger(AgenciaController.class);</span>
+
+    @Autowired
+    private AgenciaService agenciaService;
+
+    /**
+     * Endpoint para cadastrar uma nova agência.
+     * 
+     * @param request Dados da agência a ser cadastrada
+     * @return Resposta com os dados da agência cadastrada
+     */
+    @PostMapping(&quot;/cadastrar&quot;)
+    @Operation(
+        summary = &quot;Cadastrar nova agência&quot;,
+        description = &quot;Cadastra uma nova agência com suas coordenadas X e Y&quot;
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = &quot;201&quot;, 
+            description = &quot;Agência cadastrada com sucesso&quot;,
+            content = @Content(
+                mediaType = &quot;application/json&quot;,
+                schema = @Schema(implementation = CadastroAgenciaResponse.class),
+                examples = @ExampleObject(
+                    value = &quot;&quot;&quot;
+                    {
+                        &quot;id&quot;: 1,
+                        &quot;nome&quot;: &quot;AGENCIA_1&quot;,
+                        &quot;codigo&quot;: &quot;001&quot;,
+                        &quot;posX&quot;: 10.0,
+                        &quot;posY&quot;: -5.0,
+                        &quot;dataCriacao&quot;: &quot;2024-01-15T10:30:00&quot;,
+                        &quot;mensagem&quot;: &quot;Agência cadastrada com sucesso!&quot;
+                    }
+                    &quot;&quot;&quot;
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = &quot;400&quot;, 
+            description = &quot;Dados inválidos fornecidos&quot;,
+            content = @Content(
+                mediaType = &quot;application/json&quot;,
+                examples = @ExampleObject(
+                    value = &quot;&quot;&quot;
+                    {
+                        &quot;timestamp&quot;: &quot;2024-01-15T10:30:00&quot;,
+                        &quot;status&quot;: 400,
+                        &quot;error&quot;: &quot;Bad Request&quot;,
+                        &quot;message&quot;: &quot;Posição X é obrigatória&quot;,
+                        &quot;path&quot;: &quot;/desafio/cadastrar&quot;
+                    }
+                    &quot;&quot;&quot;
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = &quot;500&quot;, 
+            description = &quot;Erro interno do servidor&quot;
+        )
+    })
+    public ResponseEntity&lt;CadastroAgenciaResponse&gt; cadastrarAgencia(
+            @Valid @RequestBody CadastroAgenciaRequest request) {
+        
+<span class="fc" id="L101">        logger.info(&quot;Recebida requisição para cadastrar agência na posição ({}, {})&quot;, </span>
+<span class="fc" id="L102">                   request.getPosX(), request.getPosY());</span>
+
+        try {
+<span class="fc" id="L105">            CadastroAgenciaResponse response = agenciaService.cadastrarAgencia(request);</span>
+            
+<span class="fc" id="L107">            logger.info(&quot;Agência cadastrada com sucesso - ID: {}&quot;, response.getId());</span>
+            
+<span class="fc" id="L109">            return ResponseEntity.status(HttpStatus.CREATED).body(response);</span>
+            
+<span class="nc" id="L111">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L112">            logger.warn(&quot;Erro de validação ao cadastrar agência: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L113">            throw e;</span>
+<span class="nc" id="L114">        } catch (Exception e) {</span>
+<span class="nc" id="L115">            logger.error(&quot;Erro interno ao cadastrar agência: {}&quot;, e.getMessage(), e);</span>
+<span class="nc" id="L116">            throw new RuntimeException(&quot;Erro interno do servidor&quot;, e);</span>
+        }
+    }
+
+    /**
+     * Endpoint para buscar agências próximas a uma posição específica.
+     * 
+     * @param posX Posição X do usuário
+     * @param posY Posição Y do usuário
+     * @return Resposta com as agências ordenadas por distância
+     */
+    @GetMapping(&quot;/distancia&quot;)
+    @Operation(
+        summary = &quot;Buscar agências próximas&quot;,
+        description = &quot;Retorna as agências cadastradas ordenadas por distância da posição do usuário&quot;
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = &quot;200&quot;, 
+            description = &quot;Consulta realizada com sucesso&quot;,
+            content = @Content(
+                mediaType = &quot;application/json&quot;,
+                schema = @Schema(implementation = DistanciaResponse.class),
+                examples = @ExampleObject(
+                    value = &quot;&quot;&quot;
+                    {
+                        &quot;posicaoUsuario&quot;: {
+                            &quot;posX&quot;: -10.0,
+                            &quot;posY&quot;: 5.0
+                        },
+                        &quot;agencias&quot;: {
+                            &quot;AGENCIA_2&quot;: &quot;distancia = 2.20&quot;,
+                            &quot;AGENCIA_1&quot;: &quot;distancia = 10.00&quot;,
+                            &quot;AGENCIA_3&quot;: &quot;distancia = 37.42&quot;
+                        },
+                        &quot;totalAgencias&quot;: 3,
+                        &quot;agenciaMaisProxima&quot;: &quot;AGENCIA_2&quot;,
+                        &quot;menorDistancia&quot;: 2.20
+                    }
+                    &quot;&quot;&quot;
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = &quot;400&quot;, 
+            description = &quot;Parâmetros inválidos&quot;,
+            content = @Content(
+                mediaType = &quot;application/json&quot;,
+                examples = @ExampleObject(
+                    value = &quot;&quot;&quot;
+                    {
+                        &quot;timestamp&quot;: &quot;2024-01-15T10:30:00&quot;,
+                        &quot;status&quot;: 400,
+                        &quot;error&quot;: &quot;Bad Request&quot;,
+                        &quot;message&quot;: &quot;Parâmetros posX e posY são obrigatórios&quot;,
+                        &quot;path&quot;: &quot;/desafio/distancia&quot;
+                    }
+                    &quot;&quot;&quot;
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = &quot;500&quot;, 
+            description = &quot;Erro interno do servidor&quot;
+        )
+    })
+    public ResponseEntity&lt;DistanciaResponse&gt; buscarAgenciasProximas(
+            @Parameter(description = &quot;Coordenada X do usuário&quot;, required = true, example = &quot;-10.0&quot;)
+            @RequestParam(&quot;posX&quot;) Double posX,
+            
+            @Parameter(description = &quot;Coordenada Y do usuário&quot;, required = true, example = &quot;5.0&quot;)
+            @RequestParam(&quot;posY&quot;) Double posY) {
+        
+<span class="fc" id="L189">        logger.info(&quot;Recebida requisição para buscar agências próximas à posição ({}, {})&quot;, posX, posY);</span>
+
+        // Validação dos parâmetros
+<span class="pc bpc" id="L192" title="2 of 4 branches missed.">        if (posX == null || posY == null) {</span>
+<span class="nc" id="L193">            throw new IllegalArgumentException(&quot;Parâmetros posX e posY são obrigatórios&quot;);</span>
+        }
+
+        try {
+<span class="fc" id="L197">            DistanciaResponse response = agenciaService.buscarAgenciasProximas(posX, posY);</span>
+            
+<span class="fc" id="L199">            logger.info(&quot;Consulta realizada com sucesso - {} agências encontradas&quot;, </span>
+<span class="fc" id="L200">                       response.getTotalAgencias());</span>
+            
+<span class="fc" id="L202">            return ResponseEntity.ok(response);</span>
+            
+<span class="fc" id="L204">        } catch (Exception e) {</span>
+<span class="fc" id="L205">            logger.error(&quot;Erro ao buscar agências próximas: {}&quot;, e.getMessage(), e);</span>
+<span class="fc" id="L206">            throw new RuntimeException(&quot;Erro interno do servidor&quot;, e);</span>
+        }
+    }
+
+    /**
+     * Endpoint adicional para buscar agências dentro de um raio específico.
+     * 
+     * @param posX Posição X do usuário
+     * @param posY Posição Y do usuário
+     * @param raio Raio de busca
+     * @return Resposta com as agências dentro do raio
+     */
+    @GetMapping(&quot;/distancia/raio&quot;)
+    @Operation(
+        summary = &quot;Buscar agências dentro de um raio&quot;,
+        description = &quot;Retorna as agências cadastradas dentro de um raio específico da posição do usuário&quot;
+    )
+    public ResponseEntity&lt;DistanciaResponse&gt; buscarAgenciasDentroDoRaio(
+            @Parameter(description = &quot;Coordenada X do usuário&quot;, required = true)
+            @RequestParam(&quot;posX&quot;) Double posX,
+            
+            @Parameter(description = &quot;Coordenada Y do usuário&quot;, required = true)
+            @RequestParam(&quot;posY&quot;) Double posY,
+            
+            @Parameter(description = &quot;Raio de busca&quot;, required = true, example = &quot;50.0&quot;)
+            @RequestParam(&quot;raio&quot;) Double raio) {
+        
+<span class="fc" id="L233">        logger.info(&quot;Recebida requisição para buscar agências dentro do raio {} da posição ({}, {})&quot;, </span>
+                   raio, posX, posY);
+
+<span class="pc bpc" id="L236" title="3 of 8 branches missed.">        if (posX == null || posY == null || raio == null || raio &lt;= 0) {</span>
+<span class="fc" id="L237">            throw new IllegalArgumentException(&quot;Parâmetros posX, posY e raio (positivo) são obrigatórios&quot;);</span>
+        }
+
+        try {
+<span class="fc" id="L241">            DistanciaResponse response = agenciaService.buscarAgenciasDentroDoRaio(posX, posY, raio);</span>
+            
+<span class="fc" id="L243">            logger.info(&quot;Consulta por raio realizada com sucesso - {} agências encontradas&quot;, </span>
+<span class="fc" id="L244">                       response.getTotalAgencias());</span>
+            
+<span class="fc" id="L246">            return ResponseEntity.ok(response);</span>
+            
+<span class="nc" id="L248">        } catch (Exception e) {</span>
+<span class="nc" id="L249">            logger.error(&quot;Erro ao buscar agências dentro do raio: {}&quot;, e.getMessage(), e);</span>
+<span class="nc" id="L250">            throw new RuntimeException(&quot;Erro interno do servidor&quot;, e);</span>
+        }
+    }
+
+    /**
+     * Endpoint para listar todas as agências (com paginação).
+     * 
+     * @param pagina Número da página (padrão: 0)
+     * @param tamanho Tamanho da página (padrão: 10)
+     * @return Lista de agências
+     */
+    @GetMapping(&quot;/agencias&quot;)
+    @Operation(
+        summary = &quot;Listar agências&quot;,
+        description = &quot;Lista todas as agências cadastradas com paginação&quot;
+    )
+    public ResponseEntity&lt;List&lt;Agencia&gt;&gt; listarAgencias(
+            @Parameter(description = &quot;Número da página (começando em 0)&quot;, example = &quot;0&quot;)
+            @RequestParam(value = &quot;pagina&quot;, defaultValue = &quot;0&quot;) int pagina,
+            
+            @Parameter(description = &quot;Tamanho da página&quot;, example = &quot;10&quot;)
+            @RequestParam(value = &quot;tamanho&quot;, defaultValue = &quot;10&quot;) int tamanho) {
+        
+<span class="fc" id="L273">        logger.info(&quot;Recebida requisição para listar agências - página: {}, tamanho: {}&quot;, pagina, tamanho);</span>
+
+        try {
+<span class="fc" id="L276">            List&lt;Agencia&gt; agencias = agenciaService.listarAgencias(pagina, tamanho);</span>
+            
+<span class="fc" id="L278">            logger.info(&quot;Listagem realizada com sucesso - {} agências retornadas&quot;, agencias.size());</span>
+            
+<span class="fc" id="L280">            return ResponseEntity.ok(agencias);</span>
+            
+<span class="nc" id="L282">        } catch (Exception e) {</span>
+<span class="nc" id="L283">            logger.error(&quot;Erro ao listar agências: {}&quot;, e.getMessage(), e);</span>
+<span class="nc" id="L284">            throw new RuntimeException(&quot;Erro interno do servidor&quot;, e);</span>
+        }
+    }
+
+    /**
+     * Endpoint para obter estatísticas do sistema.
+     * 
+     * @return Estatísticas do sistema
+     */
+    @GetMapping(&quot;/estatisticas&quot;)
+    @Operation(
+        summary = &quot;Obter estatísticas&quot;,
+        description = &quot;Retorna estatísticas do sistema de agências&quot;
+    )
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; obterEstatisticas() {
+<span class="fc" id="L299">        logger.info(&quot;Recebida requisição para obter estatísticas do sistema&quot;);</span>
+
+        try {
+<span class="fc" id="L302">            Map&lt;String, Object&gt; estatisticas = agenciaService.obterEstatisticas();</span>
+            
+<span class="fc" id="L304">            logger.info(&quot;Estatísticas obtidas com sucesso&quot;);</span>
+            
+<span class="fc" id="L306">            return ResponseEntity.ok(estatisticas);</span>
+            
+<span class="nc" id="L308">        } catch (Exception e) {</span>
+<span class="nc" id="L309">            logger.error(&quot;Erro ao obter estatísticas: {}&quot;, e.getMessage(), e);</span>
+<span class="nc" id="L310">            throw new RuntimeException(&quot;Erro interno do servidor&quot;, e);</span>
+        }
+    }
+
+    /**
+     * Endpoint para buscar uma agência específica por ID.
+     * 
+     * @param id ID da agência
+     * @return Agência encontrada
+     */
+    @GetMapping(&quot;/agencias/{id}&quot;)
+    @Operation(
+        summary = &quot;Buscar agência por ID&quot;,
+        description = &quot;Retorna uma agência específica pelo seu ID&quot;
+    )
+    public ResponseEntity&lt;Agencia&gt; buscarAgenciaPorId(
+            @Parameter(description = &quot;ID da agência&quot;, required = true, example = &quot;1&quot;)
+            @PathVariable Long id) {
+        
+<span class="fc" id="L329">        logger.info(&quot;Recebida requisição para buscar agência por ID: {}&quot;, id);</span>
+
+        try {
+<span class="fc" id="L332">            Agencia agencia = agenciaService.buscarAgenciaPorId(id);</span>
+            
+<span class="fc" id="L334">            logger.info(&quot;Agência encontrada: {}&quot;, agencia.getNome());</span>
+            
+<span class="fc" id="L336">            return ResponseEntity.ok(agencia);</span>
+            
+<span class="fc" id="L338">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L339">            logger.warn(&quot;Agência não encontrada com ID: {}&quot;, id);</span>
+<span class="fc" id="L340">            throw e;</span>
+<span class="nc" id="L341">        } catch (Exception e) {</span>
+<span class="nc" id="L342">            logger.error(&quot;Erro ao buscar agência por ID: {}&quot;, e.getMessage(), e);</span>
+<span class="nc" id="L343">            throw new RuntimeException(&quot;Erro interno do servidor&quot;, e);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

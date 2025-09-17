@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CadastroAgenciaResponse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">agencia-api</a> &gt; <a href="index.source.html" class="el_package">com.santander.agencia.dto</a> &gt; <span class="el_source">CadastroAgenciaResponse.java</span></div><h1>CadastroAgenciaResponse.java</h1><pre class="source lang-java linenums">package com.santander.agencia.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
+
+/**
+ * DTO para resposta de cadastro de agência.
+ * Contém os dados da agência cadastrada com sucesso.
+ */
+@Schema(description = &quot;Resposta do cadastro de agência&quot;)
+public class CadastroAgenciaResponse {
+
+    @JsonProperty(&quot;id&quot;)
+    @Schema(description = &quot;ID único da agência&quot;, example = &quot;1&quot;)
+    private Long id;
+
+    @JsonProperty(&quot;nome&quot;)
+    @Schema(description = &quot;Nome da agência&quot;, example = &quot;AGENCIA_1&quot;)
+    private String nome;
+
+    @JsonProperty(&quot;codigo&quot;)
+    @Schema(description = &quot;Código da agência&quot;, example = &quot;001&quot;)
+    private String codigo;
+
+    @JsonProperty(&quot;posX&quot;)
+    @Schema(description = &quot;Coordenada X da agência&quot;, example = &quot;10.0&quot;)
+    private Double posX;
+
+    @JsonProperty(&quot;posY&quot;)
+    @Schema(description = &quot;Coordenada Y da agência&quot;, example = &quot;-5.0&quot;)
+    private Double posY;
+
+    @JsonProperty(&quot;dataCriacao&quot;)
+    @Schema(description = &quot;Data de criação da agência&quot;)
+    private LocalDateTime dataCriacao;
+
+    @JsonProperty(&quot;mensagem&quot;)
+    @Schema(description = &quot;Mensagem de sucesso&quot;, example = &quot;Agência cadastrada com sucesso!&quot;)
+    private String mensagem;
+
+    // Construtores
+<span class="nc" id="L43">    public CadastroAgenciaResponse() {}</span>
+
+<span class="fc" id="L45">    public CadastroAgenciaResponse(Long id, String nome, Double posX, Double posY, LocalDateTime dataCriacao) {</span>
+<span class="fc" id="L46">        this.id = id;</span>
+<span class="fc" id="L47">        this.nome = nome;</span>
+<span class="fc" id="L48">        this.posX = posX;</span>
+<span class="fc" id="L49">        this.posY = posY;</span>
+<span class="fc" id="L50">        this.dataCriacao = dataCriacao;</span>
+<span class="fc" id="L51">        this.mensagem = &quot;Agência cadastrada com sucesso!&quot;;</span>
+<span class="fc" id="L52">    }</span>
+
+    // Getters e Setters
+    public Long getId() {
+<span class="fc" id="L56">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="nc" id="L60">        this.id = id;</span>
+<span class="nc" id="L61">    }</span>
+
+    public String getNome() {
+<span class="fc" id="L64">        return nome;</span>
+    }
+
+    public void setNome(String nome) {
+<span class="nc" id="L68">        this.nome = nome;</span>
+<span class="nc" id="L69">    }</span>
+
+    public String getCodigo() {
+<span class="fc" id="L72">        return codigo;</span>
+    }
+
+    public void setCodigo(String codigo) {
+<span class="nc" id="L76">        this.codigo = codigo;</span>
+<span class="nc" id="L77">    }</span>
+
+    public Double getPosX() {
+<span class="fc" id="L80">        return posX;</span>
+    }
+
+    public void setPosX(Double posX) {
+<span class="nc" id="L84">        this.posX = posX;</span>
+<span class="nc" id="L85">    }</span>
+
+    public Double getPosY() {
+<span class="fc" id="L88">        return posY;</span>
+    }
+
+    public void setPosY(Double posY) {
+<span class="nc" id="L92">        this.posY = posY;</span>
+<span class="nc" id="L93">    }</span>
+
+    public LocalDateTime getDataCriacao() {
+<span class="fc" id="L96">        return dataCriacao;</span>
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+<span class="nc" id="L100">        this.dataCriacao = dataCriacao;</span>
+<span class="nc" id="L101">    }</span>
+
+    public String getMensagem() {
+<span class="fc" id="L104">        return mensagem;</span>
+    }
+
+    public void setMensagem(String mensagem) {
+<span class="nc" id="L108">        this.mensagem = mensagem;</span>
+<span class="nc" id="L109">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L113">        return &quot;CadastroAgenciaResponse{&quot; +</span>
+                &quot;id=&quot; + id +
+                &quot;, nome='&quot; + nome + '\'' +
+                &quot;, codigo='&quot; + codigo + '\'' +
+                &quot;, posX=&quot; + posX +
+                &quot;, posY=&quot; + posY +
+                &quot;, dataCriacao=&quot; + dataCriacao +
+                &quot;, mensagem='&quot; + mensagem + '\'' +
+                '}';
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

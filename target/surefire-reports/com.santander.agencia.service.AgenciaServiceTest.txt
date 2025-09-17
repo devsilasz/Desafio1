@@ -1,0 +1,49 @@
+-------------------------------------------------------------------------------
+Test set: com.santander.agencia.service.AgenciaServiceTest
+-------------------------------------------------------------------------------
+Tests run: 13, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 2.715 s <<< FAILURE! -- in com.santander.agencia.service.AgenciaServiceTest
+com.santander.agencia.service.AgenciaServiceTest.deveBuscarAgenciasProximasComSucesso -- Time elapsed: 2.485 s <<< ERROR!
+java.lang.RuntimeException: Erro interno ao buscar agências próximas
+	at com.santander.agencia.service.AgenciaService.buscarAgenciasProximas(AgenciaService.java:110)
+	at com.santander.agencia.service.AgenciaServiceTest.deveBuscarAgenciasProximasComSucesso(AgenciaServiceTest.java:124)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: org.mockito.exceptions.misusing.PotentialStubbingProblem: 
+Strict stubbing argument mismatch. Please check:
+ - this invocation of 'findAgenciasProximasComDistancia' method:
+    agenciaRepository.findAgenciasProximasComDistancia(
+    0.0d,
+    0.0d,
+    null
+);
+    -> at com.santander.agencia.service.AgenciaService.buscarAgenciasProximas(AgenciaService.java:91)
+ - has following stubbing(s) with different arguments:
+    1. agenciaRepository.findAgenciasProximasComDistancia(
+    0.0d,
+    0.0d,
+    1000
+);
+      -> at com.santander.agencia.service.AgenciaServiceTest.deveBuscarAgenciasProximasComSucesso(AgenciaServiceTest.java:120)
+Typically, stubbing argument mismatch indicates user mistake when writing tests.
+Mockito fails early so that you can debug potential problem easily.
+However, there are legit scenarios when this exception generates false negative signal:
+  - stubbing the same method multiple times using 'given().will()' or 'when().then()' API
+    Please use 'will().given()' or 'doReturn().when()' API for stubbing.
+  - stubbed method is intentionally invoked with different arguments by code under test
+    Please use default or 'silent' JUnit Rule (equivalent of Strictness.LENIENT).
+For more information see javadoc for PotentialStubbingProblem class.
+	at com.santander.agencia.service.AgenciaService.buscarAgenciasProximas(AgenciaService.java:91)
+	... 4 more
+
+com.santander.agencia.service.AgenciaServiceTest.deveObterEstatisticasDoSistema -- Time elapsed: 0.005 s <<< ERROR!
+java.lang.NullPointerException
+	at java.base/java.util.Objects.requireNonNull(Objects.java:233)
+	at java.base/java.util.ImmutableCollections$MapN.<init>(ImmutableCollections.java:1193)
+	at java.base/java.util.Map.of(Map.java:1431)
+	at com.santander.agencia.service.AgenciaService.obterEstatisticas(AgenciaService.java:204)
+	at com.santander.agencia.service.AgenciaServiceTest.deveObterEstatisticasDoSistema(AgenciaServiceTest.java:258)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

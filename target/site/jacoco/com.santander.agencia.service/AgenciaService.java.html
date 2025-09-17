@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AgenciaService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">agencia-api</a> &gt; <a href="index.source.html" class="el_package">com.santander.agencia.service</a> &gt; <span class="el_source">AgenciaService.java</span></div><h1>AgenciaService.java</h1><pre class="source lang-java linenums">package com.santander.agencia.service;
+
+import com.santander.agencia.dto.CadastroAgenciaRequest;
+import com.santander.agencia.dto.CadastroAgenciaResponse;
+import com.santander.agencia.dto.DistanciaResponse;
+import com.santander.agencia.model.Agencia;
+import com.santander.agencia.repository.AgenciaRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+/**
+ * Serviço responsável pela lógica de negócio relacionada às agências.
+ * Implementa operações de cadastro e consulta de distâncias com otimizações de performance.
+ */
+@Service
+@Transactional
+<span class="fc" id="L27">public class AgenciaService {</span>
+
+<span class="fc" id="L29">    private static final Logger logger = LoggerFactory.getLogger(AgenciaService.class);</span>
+
+    @Autowired
+    private AgenciaRepository agenciaRepository;
+
+    @Value(&quot;${agencia.performance.max-results:1000}&quot;)
+    private Integer maxResults;
+
+    @Value(&quot;${agencia.performance.batch-size:100}&quot;)
+    private Integer batchSize;
+
+    /**
+     * Cadastra uma nova agência no sistema.
+     * 
+     * @param request Dados da agência a ser cadastrada
+     * @return Resposta com os dados da agência cadastrada
+     */
+    @Transactional
+    public CadastroAgenciaResponse cadastrarAgencia(CadastroAgenciaRequest request) {
+<span class="fc" id="L48">        logger.info(&quot;Iniciando cadastro de agência na posição ({}, {})&quot;, request.getPosX(), request.getPosY());</span>
+
+        // Validação de duplicidade por código (se fornecido)
+<span class="pc bpc" id="L51" title="1 of 4 branches missed.">        if (request.getCodigo() != null &amp;&amp; !request.getCodigo().trim().isEmpty()) {</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">            if (agenciaRepository.existsByCodigoAndAtivoTrue(request.getCodigo())) {</span>
+<span class="fc" id="L53">                throw new IllegalArgumentException(&quot;Já existe uma agência ativa com o código: &quot; + request.getCodigo());</span>
+            }
+        }
+
+        // Criação da nova agência
+<span class="fc" id="L58">        Agencia agencia = new Agencia(request.getPosX(), request.getPosY(), request.getNome(), request.getCodigo());</span>
+<span class="fc" id="L59">        agencia = agenciaRepository.save(agencia);</span>
+
+<span class="fc" id="L61">        logger.info(&quot;Agência cadastrada com sucesso - ID: {}, Nome: {}&quot;, agencia.getId(), agencia.getNome());</span>
+
+<span class="fc" id="L63">        return new CadastroAgenciaResponse(</span>
+<span class="fc" id="L64">            agencia.getId(),</span>
+<span class="fc" id="L65">            agencia.getNome(),</span>
+<span class="fc" id="L66">            agencia.getPosX(),</span>
+<span class="fc" id="L67">            agencia.getPosY(),</span>
+<span class="fc" id="L68">            agencia.getDataCriacao()</span>
+        );
+    }
+
+    /**
+     * Busca as agências mais próximas de uma posição específica.
+     * Implementa otimizações de performance para grandes volumes de dados.
+     * 
+     * @param posX Posição X do usuário
+     * @param posY Posição Y do usuário
+     * @return Resposta com as agências ordenadas por distância
+     */
+    @Transactional(readOnly = true)
+    @Cacheable(value = &quot;agencias-proximas&quot;, key = &quot;#posX + '_' + #posY&quot;)
+    public DistanciaResponse buscarAgenciasProximas(Double posX, Double posY) {
+<span class="fc" id="L83">        logger.info(&quot;Buscando agências próximas à posição ({}, {})&quot;, posX, posY);</span>
+
+<span class="fc" id="L85">        DistanciaResponse response = new DistanciaResponse(</span>
+            new DistanciaResponse.PosicaoUsuario(posX, posY)
+        );
+
+        try {
+            // Busca otimizada usando consulta nativa com cálculo de distância
+<span class="nc" id="L91">            List&lt;Object[]&gt; resultados = agenciaRepository.findAgenciasProximasComDistancia(</span>
+                posX, posY, maxResults
+            );
+
+            // Processa os resultados e adiciona ao response
+<span class="nc bnc" id="L96" title="All 2 branches missed.">            for (Object[] resultado : resultados) {</span>
+<span class="nc" id="L97">                Agencia agencia = (Agencia) resultado[0];</span>
+<span class="nc" id="L98">                Double distancia = ((Number) resultado[1]).doubleValue();</span>
+                
+<span class="nc" id="L100">                response.adicionarAgencia(agencia.getNome(), distancia);</span>
+<span class="nc" id="L101">            }</span>
+
+<span class="nc" id="L103">            response.finalizar();</span>
+
+<span class="nc" id="L105">            logger.info(&quot;Encontradas {} agências próximas à posição ({}, {})&quot;, </span>
+<span class="nc" id="L106">                       response.getTotalAgencias(), posX, posY);</span>
+
+<span class="fc" id="L108">        } catch (Exception e) {</span>
+<span class="fc" id="L109">            logger.error(&quot;Erro ao buscar agências próximas: {}&quot;, e.getMessage(), e);</span>
+<span class="fc" id="L110">            throw new RuntimeException(&quot;Erro interno ao buscar agências próximas&quot;, e);</span>
+<span class="nc" id="L111">        }</span>
+
+<span class="nc" id="L113">        return response;</span>
+    }
+
+    /**
+     * Busca agências dentro de um raio específico.
+     * 
+     * @param posX Posição X do usuário
+     * @param posY Posição Y do usuário
+     * @param raio Raio de busca em unidades de distância
+     * @return Resposta com as agências dentro do raio
+     */
+    @Transactional(readOnly = true)
+    public DistanciaResponse buscarAgenciasDentroDoRaio(Double posX, Double posY, Double raio) {
+<span class="fc" id="L126">        logger.info(&quot;Buscando agências dentro do raio {} da posição ({}, {})&quot;, raio, posX, posY);</span>
+
+<span class="fc" id="L128">        DistanciaResponse response = new DistanciaResponse(</span>
+            new DistanciaResponse.PosicaoUsuario(posX, posY)
+        );
+
+<span class="fc" id="L132">        List&lt;Agencia&gt; agencias = agenciaRepository.findAgenciasDentroDoRaio(posX, posY, raio);</span>
+
+<span class="fc bfc" id="L134" title="All 2 branches covered.">        for (Agencia agencia : agencias) {</span>
+<span class="fc" id="L135">            double distancia = agencia.calcularDistancia(posX, posY);</span>
+<span class="fc" id="L136">            response.adicionarAgencia(agencia.getNome(), distancia);</span>
+<span class="fc" id="L137">        }</span>
+
+<span class="fc" id="L139">        response.finalizar();</span>
+
+<span class="fc" id="L141">        logger.info(&quot;Encontradas {} agências dentro do raio {} da posição ({}, {})&quot;, </span>
+<span class="fc" id="L142">                   response.getTotalAgencias(), raio, posX, posY);</span>
+
+<span class="fc" id="L144">        return response;</span>
+    }
+
+    /**
+     * Lista todas as agências ativas com paginação.
+     * 
+     * @param pagina Número da página (começando em 0)
+     * @param tamanho Tamanho da página
+     * @return Lista de agências
+     */
+    @Transactional(readOnly = true)
+    public List&lt;Agencia&gt; listarAgencias(int pagina, int tamanho) {
+<span class="fc" id="L156">        logger.info(&quot;Listando agências - página: {}, tamanho: {}&quot;, pagina, tamanho);</span>
+
+<span class="fc" id="L158">        return agenciaRepository.findByAtivoTrueOrderByDataCriacaoAsc()</span>
+<span class="fc" id="L159">            .stream()</span>
+<span class="fc" id="L160">            .skip((long) pagina * tamanho)</span>
+<span class="fc" id="L161">            .limit(tamanho)</span>
+<span class="fc" id="L162">            .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * Busca uma agência por ID.
+     * 
+     * @param id ID da agência
+     * @return Agência encontrada
+     */
+    @Transactional(readOnly = true)
+    public Agencia buscarAgenciaPorId(Long id) {
+<span class="fc" id="L173">        logger.info(&quot;Buscando agência por ID: {}&quot;, id);</span>
+        
+<span class="fc" id="L175">        return agenciaRepository.findById(id)</span>
+<span class="fc" id="L176">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Agência não encontrada com ID: &quot; + id));</span>
+    }
+
+    /**
+     * Busca uma agência por código.
+     * 
+     * @param codigo Código da agência
+     * @return Agência encontrada
+     */
+    @Transactional(readOnly = true)
+    public Agencia buscarAgenciaPorCodigo(String codigo) {
+<span class="fc" id="L187">        logger.info(&quot;Buscando agência por código: {}&quot;, codigo);</span>
+        
+<span class="fc" id="L189">        return agenciaRepository.findByCodigoAndAtivoTrue(codigo)</span>
+<span class="fc" id="L190">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Agência não encontrada com código: &quot; + codigo));</span>
+    }
+
+    /**
+     * Retorna estatísticas do sistema.
+     * 
+     * @return Mapa com estatísticas
+     */
+    @Transactional(readOnly = true)
+    public Map&lt;String, Object&gt; obterEstatisticas() {
+<span class="fc" id="L200">        logger.info(&quot;Obtendo estatísticas do sistema&quot;);</span>
+
+<span class="fc" id="L202">        long totalAgencias = agenciaRepository.countByAtivoTrue();</span>
+
+<span class="pc" id="L204">        return Map.of(</span>
+<span class="fc" id="L205">            &quot;totalAgencias&quot;, totalAgencias,</span>
+            &quot;maxResults&quot;, maxResults,
+            &quot;batchSize&quot;, batchSize,
+<span class="fc" id="L208">            &quot;timestamp&quot;, System.currentTimeMillis()</span>
+        );
+    }
+
+    /**
+     * Inativa uma agência (soft delete).
+     * 
+     * @param id ID da agência a ser inativada
+     */
+    @Transactional
+    public void inativarAgencia(Long id) {
+<span class="fc" id="L219">        logger.info(&quot;Inativando agência com ID: {}&quot;, id);</span>
+
+<span class="fc" id="L221">        Agencia agencia = buscarAgenciaPorId(id);</span>
+<span class="fc" id="L222">        agencia.setAtivo(false);</span>
+<span class="fc" id="L223">        agenciaRepository.save(agencia);</span>
+
+<span class="fc" id="L225">        logger.info(&quot;Agência {} inativada com sucesso&quot;, agencia.getNome());</span>
+<span class="fc" id="L226">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
