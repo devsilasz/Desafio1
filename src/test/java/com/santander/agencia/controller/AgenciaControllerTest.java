@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.santander.agencia.dto.CadastroAgenciaRequest;
 import com.santander.agencia.dto.CadastroAgenciaResponse;
 import com.santander.agencia.dto.DistanciaResponse;
-import com.santander.agencia.model.Agencia;
 import com.santander.agencia.service.AgenciaService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
