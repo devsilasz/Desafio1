@@ -60,8 +60,6 @@ mvn spring-boot:run -Dspring.profiles.active=test
 ### Documentação
 
 - **Swagger UI**: http://localhost:8080/swagger-ui.html
-- **OpenAPI Spec**: http://localhost:8080/api-docs
-- **Postman Collection**: [disponível em /postman-collections/](postman-collections/)
 
 ### Endpoints Principais
 
@@ -90,14 +88,6 @@ GET /desafio/agencias/{id}
 ```http
 GET /desafio/distancia?posX=-10&posY=5
 ```
-
-### Códigos de Resposta
-
-- **200**: Sucesso
-- **201**: Criado com sucesso
-- **400**: Dados inválidos
-- **404**: Recurso não encontrado
-- **500**: Erro interno do servidor
 
 ## Testes
 
