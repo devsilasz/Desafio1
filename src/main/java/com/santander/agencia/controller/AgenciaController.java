@@ -3,7 +3,6 @@ package com.santander.agencia.controller;
 import com.santander.agencia.dto.CadastroAgenciaRequest;
 import com.santander.agencia.dto.CadastroAgenciaResponse;
 import com.santander.agencia.dto.DistanciaResponse;
-import com.santander.agencia.model.Agencia;
 import com.santander.agencia.service.AgenciaService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;

@@ -135,53 +135,6 @@ class AgenciaControllerTest {
     }
 
     @Test
-    @DisplayName("Deve buscar agência por ID com sucesso")
-    void deveBuscarAgenciaPorIdComSucesso() throws Exception {
-        Agencia agencia = Agencia.builder()
-                .id(1L)
-                .nome("AGENCIA_1")
-                .posX(10.0)
-                .posY(-5.0)
-                .dataCriacao(LocalDateTime.now())
-                .build();
-
-        when(agenciaService.buscarAgenciaPorId(1L)).thenReturn(agencia);
-
-        mockMvc.perform(get("/desafio/agencias/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.nome").value("AGENCIA_1"))
-                .andExpect(jsonPath("$.posX").value(10.0))
-                .andExpect(jsonPath("$.posY").value(-5.0));
-
-        verify(agenciaService).buscarAgenciaPorId(1L);
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro 500 quando agência não for encontrada")
-    void deveRetornarErro500QuandoAgenciaNaoForEncontrada() throws Exception {
-        when(agenciaService.buscarAgenciaPorId(999L))
-                .thenThrow(new RuntimeException("Agência não encontrada com ID: 999"));
-
-        mockMvc.perform(get("/desafio/agencias/999"))
-                .andExpect(status().isInternalServerError());
-
-        verify(agenciaService).buscarAgenciaPorId(999L);
-    }
-
-    @Test
-    @DisplayName("Deve retornar erro 500 para ID inválido")
-    void deveRetornarErro500ParaIdInvalido() throws Exception {
-        when(agenciaService.buscarAgenciaPorId(null))
-                .thenThrow(new IllegalArgumentException("ID da agência é obrigatório"));
-
-        mockMvc.perform(get("/desafio/agencias/null"))
-                .andExpect(status().isBadRequest());
-
-        verify(agenciaService, never()).buscarAgenciaPorId(any());
-    }
-
-    @Test
     @DisplayName("Deve retornar erro 400 quando tentar cadastrar agência muito próxima")
     void deveRetornarErro400QuandoTentarCadastrarAgenciaMuitoProxima() throws Exception {
         CadastroAgenciaRequest request = new CadastroAgenciaRequest(10.0, -5.0);
