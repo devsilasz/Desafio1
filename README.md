@@ -15,7 +15,7 @@ API responsável pelo cadastro e consulta de agências bancárias, integrada ao 
 ## Requisitos de Ambiente
 
 ### Versões Mínimas
-
+ja ja
 - Java 17 ou superior
 - Maven 3.8 ou superior
 

@@ -34,7 +34,6 @@ public class AgenciaService {
         
         logger.info("Iniciando cadastro de agência na posição ({}, {})", request.posX(), request.posY());
 
-        // Validar se já existe agência próxima
         if (agenciaRepository.existsAgenciaProxima(request.posX(), request.posY(), DISTANCIA_MINIMA_ENTRE_AGENCIAS)) {
             logger.warn("Tentativa de cadastro de agência muito próxima a uma existente na posição ({}, {})", 
                        request.posX(), request.posY());
